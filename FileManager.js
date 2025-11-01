@@ -1,13 +1,14 @@
 import os from "os";
 import path from "path";
 import readline from "readline";
+import Commands from "./src/commands/index.js"; // Импортируем все команды
 const { stdin, stdout } = process;
 
 export default class FileManager {
   constructor(username) {
     this.username = username;
-    this.currentWorkingDirectory = os.homedir();
-    this.rootDirectory = path.parse(this.currentWorkingDirectory).root;
+    this.CWD = os.homedir(); //CWD-current working directory
+    this.rootDirectory = path.parse(this.CWD).root;
     this.rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -42,7 +43,7 @@ export default class FileManager {
     );
 
     process.on("SIGINT", () => {
-      process.stdout.write(
+      stdout.write(
         `\nThank you for using File Manager, ${this.username}, goodbye!\n`
       );
       process.exit(0);
@@ -50,8 +51,30 @@ export default class FileManager {
   }
   //  выводим Current Working Directory
   printCWD() {
-    console.log(`You are currently in ${this.currentWorkingDirectory}`);
+    console.log(`You are currently in ${this.CWD}`);
   }
+
+  async executeCommand(commandName, commandArgs) {
+    // Проверяем, есть ли такая команда в нашем наборе команд
+    if (!Commands[commandName]) {
+      throw new Error("Unknown command");
+    }
+
+    const commandHandler = Commands[commandName];
+
+    // Вызываем команду, передавая ей контекст и аргументы
+    // Команда может вернуть новое CWD, если оно изменилось (например, после cd)
+    const commandResult = await commandHandler(
+      this.CWD,
+      this.rootDirectory,
+      commandArgs
+    );
+
+    if (commandResult.newCwd) {
+      this.CWD = commandResult.newCwd;
+    }
+  }
+
   exit() {
     this.rl.close();
     process.exit(0);
