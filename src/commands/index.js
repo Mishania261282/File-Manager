@@ -1,5 +1,5 @@
 import * as navigation from "./navigation.js";
-// import * as fileOps from './fileOperations.js';
+import * as fileOperations from "./fileOperations.js";
 // import * as osInfo from './osInfo.js';
 // import * as hash from './hash.js';
 // import * as compression from './compression.js';
@@ -7,7 +7,7 @@ import * as navigation from "./navigation.js";
 // Объединяем все команды в один объект
 const Commands = {
   ...navigation,
-  //   ...fileOps,
+  ...fileOperations,
   //   ...osInfo,
   //   ...hash,
   //   ...compression,

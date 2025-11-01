@@ -38,13 +38,13 @@ export default class FileManager {
 
     process.on("exit", () =>
       console.log(
-        `\nThank you for using File Manager, ${this.username}, goodbye!`
+        `\nThank you for using File Manager1, ${this.username}, goodbye!`
       )
     );
 
     process.on("SIGINT", () => {
       stdout.write(
-        `\nThank you for using File Manager, ${this.username}, goodbye!\n`
+        `\nThank you for using File Manager2, ${this.username}, goodbye!\n`
       );
       process.exit(0);
     });
@@ -56,6 +56,7 @@ export default class FileManager {
 
   async executeCommand(commandName, commandArgs) {
     // Проверяем, есть ли такая команда в нашем наборе команд
+        
     if (!Commands[commandName]) {
       throw new Error("Unknown command");
     }
@@ -68,10 +69,29 @@ export default class FileManager {
       this.CWD,
       this.rootDirectory,
       commandArgs
-    );
+    );    
 
-    if (commandResult.newCwd) {
+    if (commandResult?.newCwd) {
       this.CWD = commandResult.newCwd;
+    }
+  }
+
+  handleError(error) {
+    const isInvalidInputError =
+      error.message.includes("Missing argument:") ||
+      error.message.includes("not a valid") ||
+      error.message.includes("already exists") ||
+      error.message.includes("Unknown command") ||
+      error.message.includes("is not a directory") ||
+      error.message.includes("is not a file") ||
+      error.message.includes("Cannot go higher than root directory") ||
+      error.message.includes("not found");
+
+    if (isInvalidInputError) {
+      console.error("Invalid input");
+    } else {
+      console.error("Operation failed");
+      console.error(`Details: ${error.message}`); // Отладочная информация
     }
   }
 
