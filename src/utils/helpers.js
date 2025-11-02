@@ -16,8 +16,6 @@ export const isDirectory = async (newPath) => {
 export const isFile = async (newPath) => {
   try {
     const stats = await fs.stat(newPath);
-    console.log(stats);
-    console.log(stats.isFile());
     return stats.isFile();
   } catch (error) {
     if (error.code === "ENOENT") return false;

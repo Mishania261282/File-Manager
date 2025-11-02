@@ -18,11 +18,14 @@ export default class FileManager {
     this.printCWD();
   }
 
-  async start() {    
+  async start() {
     this.rl.prompt();
-    this.rl.on("line", async (input) => {      
+    this.rl.on("line", async (input) => {
       const [commandName, ...commandArgs] = input.trim().split(/\s+/);
       try {
+        if (commandName === ".exit") {
+          process.exit(0);
+        }
         await this.executeCommand(commandName, commandArgs);
         // Вывод CWD происходит после успешного выполнения команды
         if (commandName !== ".exit") {
@@ -61,7 +64,7 @@ export default class FileManager {
       throw new Error("Unknown command");
     }
 
-    const commandHandler = Commands[commandName];    
+    const commandHandler = Commands[commandName];
 
     // Вызываем команду, передавая ей контекст и аргументы
     // Команда может вернуть новое CWD, если оно изменилось (например, после cd)
